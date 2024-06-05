@@ -11,6 +11,10 @@ export const SelectedMatches = () => {
           </li>
         ))}
       </ul>
+      <strong> Toplam Oran: </strong>{" "}
+      {selectedMatches
+        .reduce((acc, match) => acc * parseFloat(match.rate), 1)
+        .toFixed(2)}
     </div>
   );
 };
