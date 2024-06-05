@@ -1,7 +1,13 @@
 import axios from "axios";
-import { Bulletin } from "../types/bulletin";
+
+const axiosInstance = axios.create({
+    baseURL: "https://nesine-case-study.onrender.com",
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
 
 export const getBulletin = async () => {
-    const response = await axios.get("https://nesine-case-study.onrender.com/bets");
+    const response = await axiosInstance.get("/bets");
     return response.data;
 }
