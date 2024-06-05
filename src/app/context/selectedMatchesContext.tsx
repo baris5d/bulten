@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, ReactNode, useContext } from "react";
+import React, { createContext, useReducer, ReactNode, useContext } from 'react';
 
 interface SelectedMatch {
   id: string;
@@ -18,7 +18,7 @@ interface SelectedMatchesContextType {
 }
 
 type Action = {
-  type: "TOGGLE_SELECTION" | "REMOVE_SELECTION";
+  type: 'TOGGLE_SELECTION' | 'REMOVE_SELECTION';
   payload: { id: string; key: string; match: string; rate: string };
 };
 
@@ -31,7 +31,7 @@ const selectedMatchesReducer = (
   action: Action
 ): SelectedMatch[] => {
   switch (action.type) {
-    case "TOGGLE_SELECTION":
+    case 'TOGGLE_SELECTION':
       const { id, key, match, rate } = action.payload;
       const matchIndex = state.findIndex((match) => match.id === id);
       if (matchIndex !== -1) {
@@ -41,7 +41,7 @@ const selectedMatchesReducer = (
       } else {
         return [...state, { id, selectedKey: key, match, rate }];
       }
-    case "REMOVE_SELECTION":
+    case 'REMOVE_SELECTION':
       const { id: removeId } = action.payload;
       return state.filter((match) => match.id !== removeId);
 
@@ -67,10 +67,10 @@ export const SelectedMatchesProvider = ({
       selectedMatches.some((match) => match.id === id) &&
       selectedMatches.some((match) => match.rate === rate)
     ) {
-      dispatch({ type: "REMOVE_SELECTION", payload: { id, key, match, rate } });
+      dispatch({ type: 'REMOVE_SELECTION', payload: { id, key, match, rate } });
       return;
     }
-    dispatch({ type: "TOGGLE_SELECTION", payload: { id, key, match, rate } });
+    dispatch({ type: 'TOGGLE_SELECTION', payload: { id, key, match, rate } });
   };
 
   return (
@@ -86,7 +86,7 @@ export const useSelectedMatches = () => {
   const context = useContext(SelectedMatchesContext);
   if (!context) {
     throw new Error(
-      "useSelectedMatches must be used within a SelectedMatchesProvider"
+      'useSelectedMatches must be used within a SelectedMatchesProvider'
     );
   }
   return context;

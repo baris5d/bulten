@@ -1,15 +1,10 @@
-"use client";
-import React, { useEffect, useMemo, useState } from "react";
-import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { getBulletin } from "@/app/services/fetcher";
-import { Bulletin } from "@/app/types/bulletin";
-import { useQuery } from "@tanstack/react-query";
-import { Row, RowTitle } from "./Row";
-import {
-  SelectedMatchesProvider,
-  useSelectedMatches,
-} from "@/app/context/selectedMatchesContext";
-import { SelectedMatches } from "../SelectedMatches";
+'use client';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { Bulletin } from '@/app/types/bulletin';
+import { Row, RowTitle } from './Row';
+import { SelectedMatchesProvider } from '@/app/context/selectedMatchesContext';
+import { SelectedMatches } from '../SelectedMatches';
 
 export const Table = ({ initialData }: { initialData: Bulletin[] }) => {
   const parentRef = React.useRef<HTMLDivElement | null>(null);
@@ -29,7 +24,7 @@ export const Table = ({ initialData }: { initialData: Bulletin[] }) => {
 
   useEffect(() => {
     if (parentRef.current) {
-      const thElements = parentRef.current.querySelectorAll("th");
+      const thElements = parentRef.current.querySelectorAll('th');
       const widths = Array.from(thElements).map(
         (th) => th.getBoundingClientRect().width
       );
@@ -40,7 +35,7 @@ export const Table = ({ initialData }: { initialData: Bulletin[] }) => {
   return (
     <SelectedMatchesProvider>
       <div ref={parentRef}>
-        <table className="w-full h-800">
+        <table className="h-800 w-full">
           <thead className="sticky top-0 bg-gray-600">
             <tr className="h-16">
               <th className="border">Event Count</th>
@@ -69,10 +64,10 @@ export const Table = ({ initialData }: { initialData: Bulletin[] }) => {
               <React.Fragment key={virtualRow.index}>
                 <tr
                   style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: 0,
                     left: 0,
-                    width: "100%",
+                    width: '100%',
                     height: `${virtualRow.size / 2}px`,
                     transform: `translateY(${
                       virtualRow.start - rowVirtualizer.options.scrollMargin - 0
@@ -86,10 +81,10 @@ export const Table = ({ initialData }: { initialData: Bulletin[] }) => {
                 </tr>
                 <tr
                   style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: 0,
                     left: 0,
-                    width: "100%",
+                    width: '100%',
                     height: `${virtualRow.size / 2}px`,
                     transform: `translateY(${
                       virtualRow.start -

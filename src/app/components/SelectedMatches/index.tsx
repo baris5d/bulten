@@ -1,9 +1,9 @@
-import { useSelectedMatches } from "@/app/context/selectedMatchesContext";
+import { useSelectedMatches } from '@/app/context/selectedMatchesContext';
 
 export const SelectedMatches = () => {
-  const { selectedMatches, toggleSelection } = useSelectedMatches();
+  const { selectedMatches } = useSelectedMatches();
   return (
-    <div className="fixed right-0 bottom-0 bg-white text-black p-4">
+    <div className="fixed bottom-0 right-0 bg-white p-4 text-black">
       <ul>
         {selectedMatches.map((match) => (
           <li key={match.id}>
@@ -11,7 +11,7 @@ export const SelectedMatches = () => {
           </li>
         ))}
       </ul>
-      <strong> Toplam Oran: </strong>{" "}
+      <strong> Toplam Oran: </strong>{' '}
       {selectedMatches
         .reduce((acc, match) => acc * parseFloat(match.rate), 1)
         .toFixed(2)}
