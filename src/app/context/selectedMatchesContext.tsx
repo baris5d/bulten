@@ -18,7 +18,7 @@ interface SelectedMatchesContextType {
 }
 
 type Action = {
-  type: "TOGGLE_SELECTION";
+  type: "TOGGLE_SELECTION" | "REMOVE_SELECTION";
   payload: { id: string; key: string; match: string; rate: string };
 };
 
@@ -41,6 +41,10 @@ const selectedMatchesReducer = (
       } else {
         return [...state, { id, selectedKey: key, match, rate }];
       }
+    case "REMOVE_SELECTION":
+      const { id: removeId } = action.payload;
+      return state.filter((match) => match.id !== removeId);
+
     default:
       return state;
   }
@@ -59,6 +63,13 @@ export const SelectedMatchesProvider = ({
     match: string,
     rate: string
   ) => {
+    if (
+      selectedMatches.some((match) => match.id === id) &&
+      selectedMatches.some((match) => match.rate === rate)
+    ) {
+      dispatch({ type: "REMOVE_SELECTION", payload: { id, key, match, rate } });
+      return;
+    }
     dispatch({ type: "TOGGLE_SELECTION", payload: { id, key, match, rate } });
   };
 

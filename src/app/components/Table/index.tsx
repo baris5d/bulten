@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useMemo } from "react";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import React, { useEffect, useMemo, useState } from "react";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { getBulletin } from "@/app/services/fetcher";
 import { Bulletin } from "@/app/types/bulletin";
 import { useQuery } from "@tanstack/react-query";
-import { Row } from "./Row";
+import { Row, RowTitle } from "./Row";
 import {
   SelectedMatchesProvider,
   useSelectedMatches,
@@ -12,41 +12,36 @@ import {
 import { SelectedMatches } from "../SelectedMatches";
 
 export const Table = ({ initialData }: { initialData: Bulletin[] }) => {
-  const { data, isLoading, error } = useQuery<Bulletin[], Error>({
-    queryKey: ["posts"],
-    queryFn: getBulletin,
-    refetchOnWindowFocus: false,
-    initialData,
-  });
-
-  const memoizedData = useMemo(() => data || [], [data]);
-
   const parentRef = React.useRef<HTMLDivElement | null>(null);
 
-  const rowVirtualizer = useVirtualizer({
-    count: memoizedData.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 50,
-    measureElement:
-      typeof window !== "undefined" &&
-      navigator.userAgent.indexOf("Firefox") === -1
-        ? (element) => element?.getBoundingClientRect().height
-        : undefined,
-    overscan: 5,
+  const rowVirtualizer = useWindowVirtualizer({
+    count: initialData.length,
+    estimateSize: () => 90,
+    overscan: 10,
+    scrollMargin: parentRef.current?.offsetTop || 0,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
+  const totalSize = useMemo(
+    () => rowVirtualizer.getTotalSize(),
+    [rowVirtualizer]
+  );
+  const [columnWidths, setColumnWidths] = useState<number[]>([]);
 
   useEffect(() => {
-    console.log("Rendered");
+    if (parentRef.current) {
+      const thElements = parentRef.current.querySelectorAll("th");
+      const widths = Array.from(thElements).map(
+        (th) => th.getBoundingClientRect().width
+      );
+      setColumnWidths(widths);
+    }
   }, []);
 
   return (
     <SelectedMatchesProvider>
       <div ref={parentRef}>
-        <table className="w-full">
-          <thead className="sticky top-0">
+        <table className="w-full h-800">
+          <thead className="sticky top-0 bg-gray-600">
             <tr className="h-16">
               <th className="border">Event Count</th>
               <th className="border">Yorumlar</th>
@@ -69,9 +64,47 @@ export const Table = ({ initialData }: { initialData: Bulletin[] }) => {
               <th className="border">+99</th>
             </tr>
           </thead>
-          <tbody>
-            {rowVirtualizer.getVirtualItems().map((virtualRow, index) => (
-              <Row data={memoizedData[virtualRow.index]} key={index} />
+          <tbody className="relative" style={{ height: `${totalSize}px` }}>
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+              <React.Fragment key={virtualRow.index}>
+                <tr
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualRow.size / 2}px`,
+                    transform: `translateY(${
+                      virtualRow.start - rowVirtualizer.options.scrollMargin - 0
+                    }px)`,
+                  }}
+                >
+                  <RowTitle
+                    data={initialData[virtualRow.index]}
+                    columnWidths={columnWidths}
+                  />
+                </tr>
+                <tr
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualRow.size / 2}px`,
+                    transform: `translateY(${
+                      virtualRow.start -
+                      rowVirtualizer.options.scrollMargin +
+                      virtualRow.size / 2 -
+                      14
+                    }px)`,
+                  }}
+                >
+                  <Row
+                    data={initialData[virtualRow.index]}
+                    columnWidths={columnWidths}
+                  />
+                </tr>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
